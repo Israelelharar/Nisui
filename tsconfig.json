@@ -1,12 +1,38 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": [
+      "vite/client"
+    ],
+    "resolveJsonModule": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@client": [
+        "./clients/demo/index.ts"
+      ],
+      "@client/*": [
+        "./clients/demo/*"
+      ]
     }
-  }
+  },
+  "include": [
+    "src",
+    "clients",
+    "vite.config.ts",
+    "scripts/*.ts"
+  ]
 }

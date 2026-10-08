@@ -1,0 +1,5 @@
+import { clearSessionCookie } from './_lib/session.js';
+
+export function POST() {
+  return new Response(null, { status: 303, headers: { Location: '/login.html', 'Set-Cookie': clearSessionCookie() } });
+}

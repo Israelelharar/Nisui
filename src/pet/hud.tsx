@@ -10,7 +10,6 @@ import { PetIcon, PotionBottle, type IconName } from './icons';
 import { PigSvg } from './PigSvg';
 import { bell, tick } from './sound';
 import { species } from './species';
-import { p } from '../lib/he';
 
 /**
  * Everything that sits on top of his rooms, Talking-Tom style: the level ring
@@ -374,25 +373,10 @@ function Tray({ children }: { children: ReactNode }) {
 
 /* ───────────── playroom: his games, as toys ───────────── */
 
-export function PlayTray({ pet, day, onPlay, onArcade, onTalk }: { pet: PetState; day: number; onPlay: (g: string) => void; onArcade: () => void; onTalk: () => void }) {
+export function PlayTray({ pet, day, onPlay, onArcade }: { pet: PetState; day: number; onPlay: (g: string) => void; onArcade: () => void }) {
   const quick = [gameOfTheDay(day), gameById('trivia')!, gameById('draw')!].filter((g, i, a) => a.findIndex((x) => x.id === g.id) === i).slice(0, 3);
   return (
     <Tray>
-      {/* his happiness fills when she talks to him */}
-      <button
-        type="button"
-        onClick={onTalk}
-        onPointerDown={press}
-        className="mx-2 mt-2 flex w-[calc(100%-16px)] items-center gap-2.5 rounded-2xl bg-[#FFF3E4]/12 px-3 py-1.5 text-right transition-transform active:scale-[0.98]"
-      >
-        <span className="listening-soft flex size-9 shrink-0 items-center justify-center rounded-full bg-[#FFF3E4]">
-          <PetIcon name="mic" size={24} />
-        </span>
-        <span className="min-w-0 text-[#FFF3E4]">
-          <span className="block text-[14px] leading-tight font-bold">לדבר איתו</span>
-          <span className="block text-[11px] leading-tight text-[#FFF3E4]/75">כל משפט ש{p('תגיד', 'תגידי')} לו ממלא לו את השמחה</span>
-        </span>
-      </button>
       <div className="flex items-end justify-around px-1 pt-2 pb-1.5">
         {quick.map((g, i) => (
           <button

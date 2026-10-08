@@ -26,7 +26,6 @@ import {
   pet as petAction,
   rollDay,
   stageOf,
-  talkTo,
   tick,
   toggleSleep,
   trick as trickAction,
@@ -43,13 +42,12 @@ import type { GameResult } from '../pet/arcade/kit';
 import { GAMES, gameById, type GameId } from '../pet/arcade/registry';
 import { Arcade } from '../pet/arcade/Arcade';
 import { GameScreen } from '../pet/arcade/GameScreen';
-import { AchievementsSheet, ChatSheet, FoodSheet, JourneySheet, ShopSheet, TasksSheet, WheelSheet, type Run } from '../pet/sheets';
+import { AchievementsSheet, FoodSheet, JourneySheet, ShopSheet, TasksSheet, WheelSheet, type Run } from '../pet/sheets';
 import { babble, ceremony, chirp, click, coin as coinSound, fanfare, pop, setSoundOn, shutter, squeak } from '../pet/sound';
 import { RoomWeather } from '../pet/scene';
 import { CloudBubble } from '../pet/ui';
 import { RoomBackdrop, ROOMS, type RoomId } from '../pet/rooms';
 import { BathTray, BedTray, CoinPill, FoodTray, LevelRing, MenuButton, MenuDrawer, MenuHead, NeedButton, PlayTray, SideButton } from '../pet/hud';
-import { Repeater, type VoiceState } from '../pet/voice';
 import { capture, savePhoto, type PhotoMeta } from '../pet/album';
 import { AlbumSheet } from '../pet/AlbumSheet';
 import { ShowerRain } from '../pet/ShowerRain';
@@ -295,13 +293,9 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
   const coinBadge = useRef<HTMLButtonElement>(null);
   const [coinFly, setCoinFly] = useState<{ id: number; x: number; y: number; dx: number; dy: number; delay: number }[]>([]);
   const [coinBump, setCoinBump] = useState(0);
-  const repeater = useRef<Repeater | null>(null);
-  const [voice, setVoice] = useState<VoiceState>('off');
-  const [talk, setTalk] = useState(0);
   const [flash, setFlash] = useState(0);
   const [lastPhoto, setLastPhoto] = useState<{ meta: PhotoMeta; img: string } | null>(null);
   const [albumKey, setAlbumKey] = useState(0);
-  useEffect(() => () => repeater.current?.stop(), []);
   const box = useRef<MusicBox | null>(null);
 
   useEffect(() => setSoundOn(pet.sound), [pet.sound]);
@@ -428,7 +422,7 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
 
   // He says each new line out loud, in his own little language.
   useEffect(() => {
-    if (line && !view.asleep && voice === 'off') babble(line);
+    if (line && !view.asleep) babble(line);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [line]);
 
@@ -453,7 +447,7 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
 
   // The music box: plays while music and sound are on, rests while he listens to her.
   const nightTune = hour >= 21 || hour < 6;
-  const musicOn = view.music && view.sound && voice === 'off';
+  const musicOn = view.music && view.sound;
   useEffect(() => {
     box.current ??= new MusicBox();
     if (!musicOn) return box.current.stop();
@@ -488,41 +482,8 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
     const on = !view.sound;
     run((p) => void (p.sound = on));
     if (!on) {
-      repeater.current?.stop();
       setLine('בסדר בסדר, אני בשקט 🤐');
     } else setLine(`${species.sound} חזרתי 🔊`);
-  };
-
-  // Every sentence she says to him, he says back, and it fills his happiness.
-  const onVoice = (st: VoiceState) => {
-    setVoice(st);
-    if (st === 'speaking') run((p, out) => talkTo(p, out));
-  };
-
-  const toggleVoice = async (noMic?: () => void) => {
-    if (voice !== 'off') {
-      repeater.current?.stop();
-      setLine('סיימנו לשחק בהדים 🙂');
-      return;
-    }
-    if (!view.sound) return noMic ? noMic() : fail('הצלילים כבויים. מדליקים 🔊 קודם');
-    if (!navigator.mediaDevices?.getUserMedia) return noMic ? noMic() : fail(`הדפדפן הזה לא נותן ל${species.name} לשמוע 🙉`);
-    repeater.current ??= new Repeater(onVoice, setTalk);
-    try {
-      await repeater.current.start();
-      setLine(`אני מקשיב… ${p('תגיד', 'תגידי')} משהו ואני אחזור ${p('אחריך', 'אחרייך')} 👂`);
-    } catch {
-      repeater.current.stop();
-      if (noMic) noMic();
-      else fail('צריך לאשר מיקרופון כדי שהוא ישמע אותך 🎤');
-    }
-  };
-
-  /** "Talk to him": the microphone if it can, otherwise things to tell him by tapping. */
-  const talkToHim = () => {
-    if (view.asleep) return fail(`ששש… ${view.name} ישן 💤`);
-    if (voice !== 'off') repeater.current?.stop();
-    setSheet('chat');
   };
 
   const snap = async () => {
@@ -840,16 +801,16 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
   // What he says floats just above his head, and moves with him from room to room.
   const bubble = (
     <AnimatePresence>
-      {(voice === 'hearing' || line) && bath === null && (
+      {line && bath === null && (
         <motion.div
-          key={voice === 'hearing' ? 'hearing' : line}
+          key={line}
           initial={{ opacity: 0, y: 8, scale: 0.92 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.15 } }}
           transition={{ type: 'spring', stiffness: 380, damping: 22 }}
           className="pointer-events-none absolute bottom-[calc(100%-22px)] left-1/2 z-10 flex w-[min(290px,calc(100vw-128px))] -translate-x-1/2 justify-center"
         >
-          <CloudBubble>{voice === 'hearing' ? 'שומע אותך… 👂' : line}</CloudBubble>
+          <CloudBubble>{line}</CloudBubble>
         </motion.div>
       )}
     </AnimatePresence>
@@ -901,7 +862,6 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
                   idle={bath === null}
                   interactive={bath === null}
                   walk={false}
-                  talk={talk}
                   onPet={onPet}
                 />
               </div>
@@ -929,11 +889,10 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
               mood={face}
               asleep={view.asleep}
               sleepy={view.stats.energy < 35}
-              idle={bath === null && voice !== 'speaking' && !expect}
+              idle={bath === null && !expect}
               interactive={bath === null}
-              walk={room === 'home' && !pending.length && voice === 'off'}
+              walk={room === 'home' && !pending.length}
               need={bath === null && room === 'home' ? need : null}
-              talk={talk}
               expect={expect}
               onPet={onPet}
               onTrick={onTrick}
@@ -1073,11 +1032,6 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
           <SideButton label={`גם ${p('אתה', 'את')}`} onClick={() => setSheet('care')} alert={!mirror && view.daily.care.length === 0}>
             <PetIcon name="sprout" size={28} />
           </SideButton>
-          <SideButton label="הוא חוזר אחריי" onClick={() => void toggleVoice()} active={voice !== 'off'}>
-            <span className={`flex size-full items-center justify-center rounded-full ${voice !== 'off' ? 'listening' : ''}`}>
-              <PetIcon name="mic" size={26} />
-            </span>
-          </SideButton>
           <SideButton label="לצלם לאלבום" onClick={snap}>
             <PetIcon name="camera" size={26} />
           </SideButton>
@@ -1125,7 +1079,7 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
           )}
           {room === 'play' && (
             <motion.div key="play" exit={{ opacity: 0, y: 20 }}>
-              <PlayTray pet={view} day={clock.dayIndex} onPlay={play} onArcade={() => setArcade(true)} onTalk={talkToHim} />
+              <PlayTray pet={view} day={clock.dayIndex} onPlay={play} onArcade={() => setArcade(true)} />
             </motion.div>
           )}
           {room === 'bath' && (
@@ -1247,21 +1201,6 @@ function PetHome({ pet, gifts, mirror }: { pet: PetState; gifts: Gift[]; mirror:
       <TasksSheet open={sheet === 'tasks'} onClose={() => setSheet(null)} pet={view} run={run} fail={fail} />
       <AchievementsSheet open={sheet === 'achievements'} onClose={() => setSheet(null)} pet={view} run={run} fail={fail} />
       <JourneySheet open={sheet === 'journey'} onClose={() => setSheet(null)} pet={view} run={run} fail={fail} />
-      <ChatSheet
-        open={sheet === 'chat'}
-        onClose={() => setSheet(null)}
-        pet={view}
-        run={run}
-        fail={fail}
-        onSaid={(reply) => {
-          setLine(reply);
-          actor.current?.burst('hearts', 4, { x: 50, y: 40 });
-        }}
-        onEcho={() => {
-          setSheet(null);
-          void toggleVoice();
-        }}
-      />
       <WheelSheet open={sheet === 'wheel'} onClose={() => setSheet(null)} pet={view} run={run} fail={fail} />
       <SettingsSheet open={sheet === 'settings'} onClose={() => setSheet(null)} pet={view} run={run} mirror={mirror} />
       <Sheet open={sheet === 'gift'} onClose={() => setSheet(null)} title={`מתנה מ${A} 🎁`}>

@@ -1,18 +1,15 @@
 import { useState } from 'react';
-import { Lock, Mic } from 'lucide-react';
-import { motion } from 'motion/react';
-import { answer, canHear, chatTopics, hearOnce, speak } from './chat';
+import { Lock } from 'lucide-react';
 import { EndFriend } from '../components/Friends';
 import { legendOf, legendReady, stepValue } from './quests';
 import { Sheet } from '../components/Sheet';
 import { tap } from '../lib/haptics';
 import { achievements, COIN, CROWN_PITY, foods, items, LUCKY_CROWN, milestonesFor, rooms, skins, wheel, type Slot, type WheelSlice } from './catalog';
 import { PetIcon, PotionBottle, type IconName } from './icons';
-import { ageDays, buy, claimMilestone, claimTask, feed, owns, setSkin, spin, stageOf, talkTo, tasksFor, wear, type Notice, type PetState } from './engine';
+import { ageDays, buy, claimMilestone, claimTask, feed, owns, setSkin, spin, stageOf, tasksFor, wear, type Notice, type PetState } from './engine';
 import { LuckyCrown, PigSvg } from './PigSvg';
 import { coin } from './sound';
 import { species } from './species';
-import { p } from '../lib/he';
 
 export type Run = <R>(fn: (p: PetState, out: Notice[]) => R) => R | undefined;
 type Props = { open: boolean; onClose: () => void; pet: PetState; run: Run; fail: (msg: string) => void };
@@ -410,81 +407,6 @@ export function JourneySheet({ open, onClose, pet, run }: Props) {
           );
         })}
       </ol>
-    </Sheet>
-  );
-}
-
-/* ───────────── Talking to him (when the microphone can't) ───────────── */
-
-export function ChatSheet({ open, onClose, pet, run, onSaid, onEcho }: Props & { onSaid: (reply: string) => void; onEcho: () => void }) {
-  const [log, setLog] = useState<{ me: string; him: string }[]>([]);
-  const [hearing, setHearing] = useState(false);
-  const respond = (said: string, typed: boolean) => {
-    const him = answer(pet, said);
-    setLog((l) => [...l.slice(-5), { me: said, him }]);
-    run((p, out) => talkTo(p, out, typed));
-    speak(him);
-    onSaid(him);
-  };
-  const listen = async () => {
-    if (hearing) return;
-    tap(8);
-    setHearing(true);
-    const said = await hearOnce();
-    setHearing(false);
-    if (said.trim()) respond(said.trim(), false);
-    else setLog((l) => [...l.slice(-5), { me: '…', him: `לא שמעתי טוב. ${p('תגיד', 'תגידי')} שוב? 👂` }]);
-  };
-  return (
-    <Sheet open={open} onClose={onClose} title={`לדבר עם ${pet.name}`}>
-      <p className="-mt-2 mb-3 text-[14px] text-muted">אפשר להגיד לו משהו בקול או ללחוץ על משפט, והוא עונה בעברית. כל משפט ממלא לו את השמחה.</p>
-
-      {log.length > 0 && (
-        <ol className="mb-3 flex flex-col gap-1.5 rounded-2xl bg-soft p-3">
-          {log.map((m, i) => (
-            <li key={i} className="flex flex-col gap-1">
-              <span className="self-start rounded-2xl rounded-br-md bg-accent px-3 py-1.5 text-[14px] text-white">{m.me}</span>
-              <motion.span
-                initial={{ opacity: 0, y: 6, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                className="self-end rounded-2xl rounded-bl-md bg-paper px-3 py-1.5 text-[14px] shadow-soft"
-              >
-                {m.him}
-              </motion.span>
-            </li>
-          ))}
-        </ol>
-      )}
-
-      {canHear() && (
-        <button
-          type="button"
-          onClick={listen}
-          className={`mb-3 flex w-full items-center justify-center gap-2 rounded-full py-3 text-[16px] font-bold text-white transition-transform active:scale-[0.98] ${hearing ? 'listening bg-[#E0476B]' : 'bg-accent'}`}
-        >
-          <Mic size={20} strokeWidth={2.4} />
-          {hearing ? `מקשיב… ${p('דבר', 'דברי')}` : 'להגיד לו משהו בקול'}
-        </button>
-      )}
-
-      <div className="flex flex-wrap gap-2">
-        {chatTopics.map((say) => (
-          <button
-            key={say}
-            type="button"
-            onClick={() => {
-              tap(6);
-              respond(say, true);
-            }}
-            className="rounded-2xl rounded-br-md bg-paper px-3.5 py-2 text-[15px] font-bold shadow-soft transition-transform active:scale-95"
-          >
-            {say}
-          </button>
-        ))}
-      </div>
-      <button type="button" onClick={onEcho} className="mt-4 mb-6 w-full text-center text-[13px] font-bold text-muted underline underline-offset-4">
-        או שהוא יחזור {p('אחריך', 'אחרייך')} בקול מצחיק (עד 30 שניות)
-      </button>
     </Sheet>
   );
 }

@@ -111,7 +111,7 @@ function slide(tiles: Tile[], dir: 'left' | 'right' | 'up' | 'down') {
 const canMove = (tiles: Tile[]) => (['left', 'right', 'up', 'down'] as const).some((d) => slide(tiles, d).moved);
 
 /**
- * 2048 ירקות: swipe, and two of the same join into the next: lettuce, carrot,
+ * מחברים ירקות: swipe, and two of the same join into the next: lettuce, carrot,
  * green apple… all the way to a golden star. No clock; it ends when the board is full.
  */
 export function MergeGame({ onEnd, onClose }: GameProps) {
@@ -164,7 +164,7 @@ export function MergeGame({ onEnd, onClose }: GameProps) {
   const gap = 2.5;
   const size = (100 - gap * (N + 1)) / N;
   return (
-    <Stage title="2048 ירקות" score={score} level={best + 1} onClose={onClose} banner={banner} bg="linear-gradient(#FFF6E4, #F7E8CF)">
+    <Stage title="מחברים ירקות" score={score} level={best + 1} onClose={onClose} banner={banner} bg="linear-gradient(#FFF6E4, #F7E8CF)">
       <div className="flex h-full flex-col items-center px-4 pt-3">
         <div
           dir="ltr"

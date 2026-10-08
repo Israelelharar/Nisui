@@ -3,14 +3,14 @@ import { tap } from '../../lib/haptics';
 import { bell, bonk } from '../sound';
 import { FX, Hint, Stage, TapToStart, announceLevel, useBanner, useCanvasLoop, type GameProps } from './kit';
 
-// Notes as semitones from middle C. Folk tunes everyone knows.
-const C = 0, D = 2, E = 4, F = 5, G = 7, A = 9, Hi = 12;
+// Notes as semitones from middle C. Folk tunes everyone knows, all old enough to be public domain.
+const C = 0, D = 2, E = 4, F = 5, G = 7, A = 9;
 const SONGS: { name: string; notes: number[] }[] = [
   { name: 'יונתן הקטן', notes: [G, E, E, F, D, D, C, D, E, F, G, G, G, G, E, E, F, D, D, C, E, G, G, C] },
   { name: 'כוכב קטן', notes: [C, C, G, G, A, A, G, F, F, E, E, D, D, C, G, G, F, F, E, E, D, G, G, F, F, E, E, D, C, C, G, G, A, A, G, F, F, E, E, D, D, C] },
   { name: 'שיר השמחה', notes: [E, E, F, G, G, F, E, D, C, C, D, E, E, D, D, E, E, F, G, G, F, E, D, C, C, D, E, D, C, C] },
   { name: 'יום הולדת שמח', notes: [G - 12, G - 12, A - 12, G - 12, C, 11 - 12, G - 12, G - 12, A - 12, G - 12, D, C, G - 12, G - 12, G, E, C, 11 - 12, A - 12, F, F, E, C, D, C] },
-  { name: 'שלום עליכם', notes: [C, E, G, Hi, G, F, E, D, C, D, E, F, E, D, C, C, E, G, Hi, G, F, E, D, E, D, C] },
+  { name: 'פעמונים', notes: [E, E, E, E, E, E, E, G, C, D, E, F, F, F, F, F, E, E, E, E, D, D, E, D, G] },
 ];
 const freq = (semi: number) => 261.63 * 2 ** (semi / 12);
 

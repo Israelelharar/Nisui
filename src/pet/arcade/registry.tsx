@@ -50,7 +50,7 @@ export const GAMES: GameInfo[] = ([
   { id: 'peek', name: `איפה ה${species.name}?`, desc: 'ללחוץ כשהוא מציץ. החתול? לא!', shelf: 'action', icon: 'box', color: '#D9C2A6', care: true, hearts: true, Component: L(() => import('../games'), 'PeekGame') },
   // ── חשיבה ──
   { id: 'stack', name: 'מגדל עוגה', desc: 'עוצרים כל שכבה בדיוק מעל הקודמת', shelf: 'mind', icon: 'cake', color: '#FFD9E6', Component: L(() => import('./StackGame'), 'StackGame') },
-  { id: 'merge', name: '2048 ירקות', desc: 'מחליקים ומחברים: חסה + חסה = גזר…', shelf: 'mind', icon: 'grid', color: '#FFE9B8', Component: L(() => import('./MergeGame'), 'MergeGame') },
+  { id: 'merge', name: 'מחברים ירקות', desc: 'מחליקים ומחברים: חסה + חסה = גזר…', shelf: 'mind', icon: 'grid', color: '#FFE9B8', Component: L(() => import('./MergeGame'), 'MergeGame') },
   { id: 'sort', name: 'מיון צבעים', desc: 'למזוג כל צבע לבקבוק משלו', shelf: 'mind', icon: 'tubes', color: '#C8EDE6', keepsLevel: true, unit: 'שלב', Component: L(() => import('./SortGame'), 'SortGame') },
   { id: 'connect', name: 'ארבע בשורה', desc: 'נגדו. הוא נהיה חכם יותר בכל ניצחון', shelf: 'mind', icon: 'discs', color: '#FFC2C2', keepsLevel: true, unit: 'שלב', Component: L(() => import('./ConnectGame'), 'ConnectGame') },
   { id: 'find', name: p('מצא אותו', 'מצאי אותו'), desc: 'הוא מתחבא בין המון דברים. איפה הוא?', shelf: 'mind', icon: 'glass', color: '#D7E7FF', keepsLevel: true, unit: 'שלב', Component: L(() => import('./FindGame'), 'FindGame') },

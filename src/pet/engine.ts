@@ -364,15 +364,6 @@ function drinkPotion(s: PetState, id: string, out: Notice[]): Fail {
   return null;
 }
 
-/** She talked to him (he heard a whole sentence and said it back): that's what fills his happiness. */
-export function talkTo(s: PetState, out: Notice[], typed = false) {
-  if (s.asleep) return;
-  count(s, 'talks');
-  s.stats.happy = clamp(s.stats.happy + (typed ? 9 : 14));
-  if (s.counters.talks % 3 === 0) gainXp(s, 2, out);
-  checkAchievements(s, out);
-}
-
 export function pet(s: PetState, out: Notice[]) {
   count(s, 'pets');
   // Petting him soon after he cried (from a slap) makes up.

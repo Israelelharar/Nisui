@@ -20,7 +20,7 @@ promo video unless he asks otherwise. Talk to him in Hebrew only.
    hashtags per video plus upload tips. Send the mp4s with SendUserFile.
 
 ## 2. Contact details (end card and post captions)
-- WhatsApp: **054-6631352**, link https://wa.me/972546631352
+- WhatsApp number and wa.me link: see `סרטונים/פוסטים.md` (kept out of the template code on purpose; `check:leaks` bans it).
 - Or a DM on TikTok.
 - Never put a price in a video.
 

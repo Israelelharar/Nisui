@@ -305,7 +305,7 @@ function Gallery({ onPhoto }: { onPhoto: (p: Photo) => void }) {
         ))}
       </div>
       <p className="mt-5 text-center text-sm text-muted">
-        {remaining > 0 ? `כל יום נפתחת תמונה חדשה. עוד ${remaining} מחכות לך.` : 'עוד תמונות, סרטונים והקלטות בדרך.'}
+        {remaining > 0 ? `כל יום נפתחת תמונה חדשה. עוד ${remaining} מחכות לך.` : 'כל יום חוזרת אחת מהן לעמוד הבית.'}
       </p>
     </>
   );

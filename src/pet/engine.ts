@@ -7,7 +7,7 @@ import {
   foodById,
   itemById,
   items,
-  milestones,
+  milestonesFor,
   skinById,
   stages,
   streakBonus,
@@ -171,7 +171,12 @@ export function tick(s: PetState, now = Date.now()) {
 }
 
 export const ageDays = (s: PetState, now = Date.now()) => Math.floor((now - s.adoptedAt) / 86_400_000);
-export const stageOf = (days: number) => [...stages].reverse().find((x) => days >= x.from)!;
+export const stageOf = (days: number) => {
+  const st = [...stages].reverse().find((x) => days >= x.from)!;
+  const years = Math.floor(days / 365);
+  // "בן שנה", then "בן 2", "בן 3"... every year from here on.
+  return years >= 2 ? { ...st, name: `${species.name} בן ${years}` } : st;
+};
 export const xpForNext = (level: number) => 40 + level * 30;
 
 export type Mood = 'asleep' | 'sick' | 'hungry' | 'dirty' | 'sleepy' | 'sad' | 'happy' | 'ok';
@@ -294,7 +299,7 @@ export function claimTask(s: PetState, id: string, out: Notice[]) {
 }
 
 export function claimMilestone(s: PetState, day: number, out: Notice[]) {
-  const m = milestones.find((x) => x.day === day);
+  const m = milestonesFor(ageDays(s)).find((x) => x.day === day);
   if (!m || s.milestones.includes(day) || ageDays(s) < day) return;
   s.milestones.push(day);
   out.push({ text: `🎂 ${m.title}`, big: true });

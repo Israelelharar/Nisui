@@ -6,7 +6,7 @@ import { EndFriend } from '../components/Friends';
 import { legendOf, legendReady, stepValue } from './quests';
 import { Sheet } from '../components/Sheet';
 import { tap } from '../lib/haptics';
-import { achievements, COIN, CROWN_PITY, foods, items, LUCKY_CROWN, milestones, rooms, skins, wheel, type Slot, type WheelSlice } from './catalog';
+import { achievements, COIN, CROWN_PITY, foods, items, LUCKY_CROWN, milestonesFor, rooms, skins, wheel, type Slot, type WheelSlice } from './catalog';
 import { PetIcon, PotionBottle, type IconName } from './icons';
 import { ageDays, buy, claimMilestone, claimTask, feed, owns, setSkin, spin, stageOf, talkTo, tasksFor, wear, type Notice, type PetState } from './engine';
 import { LuckyCrown, PigSvg } from './PigSvg';
@@ -366,15 +366,17 @@ export function JourneySheet({ open, onClose, pet, run }: Props) {
       <div className="mb-4 rounded-2xl bg-paper p-4 shadow-soft">
         <div className="mb-1 flex items-baseline justify-between">
           <span className="font-serif text-[20px]">{stage.name}</span>
-          <span className="text-[14px] text-muted">יום {Math.min(days + 1, 365)} מתוך 365</span>
+          <span className="text-[14px] text-muted">
+            {days >= 365 && `שנה ${Math.floor(days / 365) + 1} · `}יום {(days % 365) + 1} מתוך 365
+          </span>
         </div>
-        <Bar value={days} max={365} color="bg-gradient-to-l from-accent to-gold" />
+        <Bar value={days % 365} max={365} color="bg-gradient-to-l from-accent to-gold" />
         <p className="mt-2 text-[13px] text-muted">
           אומץ ב-{new Date(pet.adoptedAt).toLocaleDateString('he-IL')} · כל יום הוא גדל עוד קצת. בסוף השנה מחכה הפתעה 🎂
         </p>
       </div>
       <ol className="relative space-y-2 pb-6 before:absolute before:top-2 before:right-[19px] before:bottom-8 before:w-0.5 before:bg-line">
-        {milestones.map((m) => {
+        {milestonesFor(days).map((m) => {
           const reached = days >= m.day;
           const claimed = pet.milestones.includes(m.day);
           return (

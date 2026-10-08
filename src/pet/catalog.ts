@@ -369,6 +369,13 @@ export const milestones: Milestone[] = [
   { day: 365, title: 'שנה שלמה ביחד 🎂', coins: 1000, unlock: 'forever' },
 ];
 
+/** The first year above, then one more birthday every year, for as long as the site lives. */
+export function milestonesFor(days: number): Milestone[] {
+  const years = Math.max(1, Math.floor(days / 365) + 1);
+  const birthdays = Array.from({ length: years - 1 }, (_, i) => ({ day: 365 * (i + 2), title: `${i + 2} שנים ביחד 🎂`, coins: 1000 }));
+  return [...milestones, ...birthdays];
+}
+
 export interface Achievement {
   id: string;
   title: string;

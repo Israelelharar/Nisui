@@ -3,7 +3,7 @@ import { PeekFriend } from '../components/Friends';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import { useApp } from '../hooks/useApp';
-import { dates, unlockedCount, type DateEntry, type Sticker } from '../content/dates';
+import { dates, datesFinished, unlockedCount, type DateEntry, type Sticker } from '../content/dates';
 import { photoById } from '../content/photos';
 import type { Photo } from '../content/types';
 import { tap } from '../lib/haptics';
@@ -57,7 +57,7 @@ function useUnlock() {
     isAdmin,
     isOpen: (d: DateEntry) => idx(d) < count,
     hersOpen: (d: DateEntry) => idx(d) < hers,
-    isNew: (d: DateEntry) => !isAdmin && idx(d) === count - 1,
+    isNew: (d: DateEntry) => !isAdmin && idx(d) === count - 1 && !datesFinished(clock.dayIndex, launchDay),
     inDays: (d: DateEntry) => idx(d) - count + 1,
   };
 }

@@ -10,6 +10,9 @@ const startDay = Math.floor(Date.parse(`${BOOK_START}T00:00:00Z`) / 86_400_000);
 export const chaptersOpen = (dayIndex: number, all: boolean) => (all ? book.length : Math.max(1, Math.min(book.length, dayIndex - startDay + 1)));
 
 /** For the admin's "not open yet" marks: what the partner has today. */
+/** Every chapter is out: from now on the home card brings back an old one each day. */
+export const bookFinished = (dayIndex: number) => dayIndex - startDay + 1 > book.length;
+
 export const chaptersOpenForPartner = (dayIndex: number) => chaptersOpen(dayIndex, false);
 
 /** Hebrew numerals, the way a real Hebrew book numbers its chapters: א׳, ט״ו, כ״ח. */

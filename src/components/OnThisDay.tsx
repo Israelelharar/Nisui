@@ -18,7 +18,7 @@ function pick(all: Record<string, Moment>, today: string) {
   const year = Number(today.slice(0, 4));
   // Exact date first (most recent year), then up to 3 days either side.
   for (const shift of [0, -1, 1, -2, 2, -3, 3]) {
-    for (let y = year - 1; y >= year - 12; y--) {
+    for (let y = year - 1; y >= year - 100; y--) {
       const target = isoOf(dayOf(`${y}${today.slice(4)}`) + shift);
       if (all[target]) return { date: target, years: y === year - 1 ? 1 : year - y, exact: shift === 0, moment: all[target] };
     }

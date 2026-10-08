@@ -1,4 +1,15 @@
 {
   "framework": "vite",
-  "rewrites": [{ "source": "/((?!api/|login\\.html|assets/|icons/|manifest\\.webmanifest|sw\\.js).*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/((?!api/|login\\.html|assets/|icons/|manifest\\.webmanifest|sw\\.js).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/login",
+      "schedule": "17 3 * * *"
+    }
+  ]
 }

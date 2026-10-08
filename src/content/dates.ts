@@ -27,5 +27,8 @@ export interface DateEntry {
 
 export const dates: DateEntry[] = content.dates ?? [];
 
+/** Every date is out: from now on one comes back from the diary each day. */
+export const datesFinished = (dayIndex: number, launchDay: number) => dayIndex - launchDay + 1 > dates.length;
+
 export const unlockedCount = (dayIndex: number, launchDay: number, all: boolean) =>
   all ? dates.length : Math.max(1, Math.min(dates.length, dayIndex - launchDay + 1));

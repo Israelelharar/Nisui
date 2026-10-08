@@ -6,7 +6,7 @@ import { tap } from '../lib/haptics';
 import { track } from '../lib/events';
 import { burstHeart } from '../components/HeartBurst';
 import { Sheet } from '../components/Sheet';
-import { COIN, foods, growth, items, lines, milestones, nameIdeas, pick, skins, tricks, type TrickId } from '../pet/catalog';
+import { COIN, foods, growth, items, lines, milestonesFor, nameIdeas, pick, skins, tricks, type TrickId } from '../pet/catalog';
 import { TricksSheet } from '../pet/tricks';
 import {
   adopt,
@@ -1413,7 +1413,7 @@ function NameTag({ children }: { children: string }) {
 
 const claimableMilestone = (p: PetState) => {
   const d = ageDays(p);
-  return milestones.some((m) => d >= m.day && !p.milestones.includes(m.day));
+  return milestonesFor(d).some((m) => d >= m.day && !p.milestones.includes(m.day));
 };
 
 function MiniConfetti() {

@@ -1,4 +1,4 @@
-import { roleFromRequest } from './_lib/session.js';
+import { createSessionCookie, roleFromRequest } from './_lib/session.js';
 import { notifyChannels } from './_lib/notify.js';
 import { hasStore, setIfAbsent, getString } from './_lib/store.js';
 import { contentDateNow } from './_lib/day.js';
@@ -17,5 +17,8 @@ export async function GET(request: Request) {
     [launchDate, settings] = await Promise.all([getString('launch'), getSettings()]);
   }
   const body = role === 'admin' ? { role, launchDate, settings, notify: notifyChannels(), store: hasStore() } : { role, launchDate, settings };
-  return Response.json(body, { headers: { 'Cache-Control': 'no-store' } });
+  // Every visit renews the login for another 400 days, so whoever keeps using the site never gets logged out.
+  const headers: Record<string, string> = { 'Cache-Control': 'no-store' };
+  if (role) headers['Set-Cookie'] = await createSessionCookie(role);
+  return Response.json(body, { headers });
 }

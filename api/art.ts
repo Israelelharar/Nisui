@@ -16,6 +16,7 @@ import { hasStore, getJSON, setJSON, del } from './_lib/store.js';
 const LIST = 'art:list';
 const GIFTS = 'art:gifts';
 const imgKey = (id: string) => `art:img:${id}`;
+const MAX_ART = 120;
 const ID = /^a[a-z0-9]{4,20}$/;
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 
@@ -92,7 +93,10 @@ export async function POST(request: Request) {
     meta.note = text(a.note, 200) || undefined;
   }
   await setJSON(imgKey(meta.id), img);
-  await setJSON(LIST, [meta, ...list].slice(0, 200));
+  // Capped so the gallery never outgrows the free store; the oldest image goes with its entry.
+  const all = [meta, ...list];
+  await setJSON(LIST, all.slice(0, MAX_ART));
+  await Promise.all(all.slice(MAX_ART).map((x) => del(imgKey(x.id))));
   if (meta.dedicated) {
     const ids = (await getJSON<string[]>(GIFTS)) ?? [];
     await setJSON(GIFTS, [...ids, meta.id].slice(-30));

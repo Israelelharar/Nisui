@@ -27,6 +27,7 @@ async function backup(pet: unknown) {
 const GIFTS = 'pet:gifts';
 const PHOTOS = 'pet:photos';
 const photoKey = (id: string) => `pet:photo:${id}`;
+const MAX_PHOTOS = 150;
 /** Food ids differ per species (src/pet/species), so the server only checks the shape. */
 const isFoodId = (v: unknown): v is string => typeof v === 'string' && /^[a-z][a-zA-Z]{1,24}$/.test(v);
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -134,8 +135,10 @@ export async function POST(request: Request) {
     const caption = typeof body.photo.caption === 'string' ? body.photo.caption.slice(0, 120) : '';
     const meta: PhotoMeta = { id: `p${Date.now().toString(36)}`, caption, at: Date.now() };
     await setJSON(photoKey(meta.id), img);
-    const list = [meta, ...((await getJSON<PhotoMeta[]>(PHOTOS)) ?? [])].slice(0, 300);
-    await setJSON(PHOTOS, list);
+    // Capped so the album never outgrows the free store; the oldest image goes with its entry.
+    const all = [meta, ...((await getJSON<PhotoMeta[]>(PHOTOS)) ?? [])];
+    await setJSON(PHOTOS, all.slice(0, MAX_PHOTOS));
+    await Promise.all(all.slice(MAX_PHOTOS).map((p) => del(photoKey(p.id))));
     return json({ photo: meta });
   }
   if (role !== 'admin') return json({ error: 'forbidden' }, 403);

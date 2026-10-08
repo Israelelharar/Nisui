@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF7F1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{TITLE}}</title>
+<link rel="icon" href="/seal.svg" type="image/svg+xml">
+<style>
+  :root { --bg:#FFF7F1; --paper:#fff; --ink:#3A2228; --muted:#7A5F63; --accent:#C2385A; --env:#F6E3D3; --env-dark:#EDCFB9; --line:#EEDFD5; }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100dvh; background:var(--bg); color:var(--ink); font-family:'Assistant',system-ui,sans-serif; display:flex; justify-content:center; }
+  main { width:100%; max-width:420px; padding:64px 28px 40px; display:flex; flex-direction:column; align-items:center; }
+  h1 { margin:0; font-family:'Frank Ruhl Libre','David Libre',Georgia,serif; font-weight:500; font-size:24px; }
+  .sub { margin:6px 0 0; color:var(--muted); font-size:15px; }
+  .env { position:relative; margin-top:48px; width:min(300px,100%); height:190px; transform:rotate(-2deg); border-radius:10px; background:var(--env); box-shadow:0 24px 50px rgb(80 40 30 / .16); }
+  .env svg { position:absolute; inset:0 0 auto 0; width:100%; height:110px; }
+  .seal { position:absolute; top:60px; left:50%; margin-left:-34px; width:68px; height:68px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 5px rgb(0 0 0 / .12), 0 6px 14px rgb(0 0 0 / .18); }
+  .to { position:absolute; right:22px; bottom:18px; font-family:'Frank Ruhl Libre','David Libre',Georgia,serif; font-size:19px; }
+  form { margin-top:44px; width:100%; display:flex; flex-direction:column; gap:10px; }
+  label { font-weight:700; font-size:15px; }
+  input { height:56px; border-radius:16px; border:1.5px solid var(--line); background:var(--paper); padding:0 18px; font-size:18px; font-family:inherit; color:var(--ink); text-align:center; }
+  input:focus { outline:2px solid var(--accent); outline-offset:2px; }
+  button { height:56px; border:0; border-radius:16px; background:var(--accent); color:#fff; font-size:17px; font-weight:700; font-family:inherit; cursor:pointer; }
+  .wrong { display:none; margin:0; color:var(--accent); font-size:14px; text-align:center; }
+  .wrong.show { display:block; }
+</style>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+</head>
+<body>
+<main>
+  <h1>יש לך מכתב.</h1>
+  <p class="sub">הוא נפתח רק עם המילה שלך.</p>
+  <div class="env" aria-hidden="true">
+    <svg viewBox="0 0 300 110" preserveAspectRatio="none"><path d="M2 2 L150 96 L298 2" fill="none" stroke="#EDCFB9" stroke-width="2"/></svg>
+    <span class="seal"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.3-8.6C1.2 8.6 3 5 6.5 5c2 0 3.5 1.2 5.5 3.2C14 6.2 15.5 5 17.5 5 21 5 22.8 8.6 21.3 11.4 19 15.6 12 20 12 20z" fill="#FFE7B8"/></svg></span>
+    <span class="to">{{TO}}</span>
+  </div>
+  <form method="post" action="/api/login">
+    <label for="password">הסיסמה שלך</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
+    <p class="wrong" id="wrong" role="alert">זאת לא הסיסמה. {{TRY_AGAIN}} 🙂</p>
+    <button type="submit">לפתוח</button>
+  </form>
+</main>
+<script>
+  if (new URLSearchParams(location.search).has('wrong')) document.getElementById('wrong').classList.add('show');
+</script>
+</body>
+</html>

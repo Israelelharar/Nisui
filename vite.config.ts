@@ -5,6 +5,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { projectBackup } from './scripts/backup-plugin';
 import { clientShell } from './scripts/shell-plugin';
+import { devApi } from './scripts/dev-api-plugin';
 
 /**
  * CLIENT picks the couple: clients/<CLIENT>/ (defaults to the demo couple).
@@ -18,5 +19,5 @@ if (!existsSync(resolve(clientDir, 'index.ts'))) throw new Error(`Unknown CLIENT
 export default defineConfig({
   base: process.env.VITE_PREVIEW ? './' : '/',
   resolve: { alias: { '@client': clientDir } },
-  plugins: [react(), tailwindcss(), clientShell(clientDir), projectBackup(CLIENT)],
+  plugins: [react(), tailwindcss(), clientShell(clientDir), devApi(), projectBackup(CLIENT)],
 });

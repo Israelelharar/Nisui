@@ -105,5 +105,8 @@ export const SPECIES: Record<SpeciesId, Species> = {
   },
 };
 
+/** In dev, `?species=cat` previews another animal (for showing a client the options). */
+const preview = import.meta.env.DEV && typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('species') as SpeciesId | null) : null;
+
 /** This site's pet. */
-export const species: Species = SPECIES[client.pet?.species ?? 'guineaPig'];
+export const species: Species = SPECIES[preview && preview in SPECIES ? preview : (client.pet?.species ?? 'guineaPig')];

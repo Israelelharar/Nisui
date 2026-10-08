@@ -138,7 +138,8 @@ const seenThisVisit = () => {
 
 export function App() {
   // The envelope greets the partner once per visit (per browser session).
-  const [entered, setEntered] = useState(() => !has('welcome') || seenThisVisit());
+  // The admin page skips it: the envelope is addressed to the partner.
+  const [entered, setEntered] = useState(() => !has('welcome') || seenThisVisit() || window.location.pathname.startsWith('/admin'));
   // Without the envelope, the visit still counts once per session.
   useEffect(() => {
     if (has('welcome') || seenThisVisit()) return;

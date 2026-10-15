@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { Archive, Check, Copy } from 'lucide-react';
+import { Archive, Check } from 'lucide-react';
 import { useApp } from '../hooks/useApp';
 import { appendToZip, type ZipInput } from '../lib/zip';
 import { fetchAllData, fetchKeys, mb, saveFile, today } from '../lib/backup';
@@ -11,22 +11,20 @@ import { client } from '../client';
 import { P, a } from '../lib/he';
 
 /**
- * "הכל בקובץ אחד": one tap, one zip. The whole project as it was built (code,
- * content, photos, docs, skills; packed by scripts/backup-plugin.ts), plus
- * everything on the server right now, plus READ-ME-FIRST.md telling any AI
- * how to bring the site back. Admin only.
+ * "הכל בקובץ אחד": one tap, one zip. This couple's content (texts, letters,
+ * photos; packed by scripts/backup-plugin.ts) plus everything on the server
+ * right now. Never the site's code. Admin only, never a demo guest.
  */
-const PROMPT = `זה גיבוי מלא של האתר שבניתי ל${P}. תקרא את READ-ME-FIRST.md ותעלה את האתר מחדש, צעד אחרי צעד, כולל הנתונים.`;
-const STEPS = ['הקוד והתוכן', 'הנתונים מהשרת', 'אורז'] as const;
+const STEPS = ['התוכן', 'הנתונים מהשרת', 'אורז'] as const;
 
 export function ProjectBackup() {
-  const { viewer, showToast } = useApp();
+  const { viewer } = useApp();
   const reduce = useReducedMotion();
   const [step, setStep] = useState<number | null>(null);
   const [pct, setPct] = useState(0);
   const [done, setDone] = useState<{ name: string; size: number; data: boolean } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  if (viewer.role !== 'admin') return null;
+  if (viewer.role !== 'admin' || viewer.guest || viewer.demo) return null;
 
   const run = async () => {
     tap(10);
@@ -36,7 +34,7 @@ export function ProjectBackup() {
       // 1. the project zip, with download progress
       setStep(0);
       setPct(0);
-      const res = await fetch('/backup/project-source.zip', { cache: 'no-store' });
+      const res = await fetch('/backup/content.zip', { cache: 'no-store' });
       if (!res.ok || !res.body) throw new Error(res.status === 404 ? 'nozip' : String(res.status));
       const total = Number(res.headers.get('content-length')) || 0;
       const reader = res.body.getReader();
@@ -86,16 +84,6 @@ export function ProjectBackup() {
     setStep(null);
   };
 
-  const copyPrompt = async () => {
-    tap(6);
-    try {
-      await navigator.clipboard.writeText(PROMPT);
-      showToast('הועתק. להדביק יחד עם הקובץ 📋');
-    } catch {
-      showToast('לא הצלחתי להעתיק');
-    }
-  };
-
   const busy = step !== null;
   return (
     <section>
@@ -106,9 +94,9 @@ export function ProjectBackup() {
       </SectionTitle>
       <div className="relative overflow-hidden rounded-[18px] bg-[#2a1a1e] px-5 pt-5 pb-4 text-[#f6e9da] shadow-paper">
         <div aria-hidden className="paper-grain pointer-events-none absolute inset-0 opacity-40" />
-        <p className="relative font-serif text-[21px] leading-snug">אם חס וחלילה משהו יקרה, מהקובץ הזה האתר חוזר לחיים.</p>
+        <p className="relative font-serif text-[21px] leading-snug">כל מה ששלכם, שמור בקובץ אחד.</p>
         <p className="relative mt-1.5 text-[14px] leading-relaxed text-[#f6e9da]/75">
-          כל הקוד, הספר, המכתבים, התמונות, החבר הקטן, הציורים, היומן של {P}, וההוראות המדויקות לבינה מלאכותית איך להעלות הכל מחדש.
+          הספר, המכתבים, התמונות, החבר הקטן, הציורים והיומן של {P}. אם חס וחלילה משהו יקרה, שולחים את הקובץ למי שבנה את האתר והכל חוזר.
         </p>
 
         <button
@@ -149,15 +137,6 @@ export function ProjectBackup() {
           </p>
         )}
 
-        <div className="relative mt-4 border-t border-dashed border-[#f6e9da]/25 pt-3">
-          <p className="text-[13px] text-[#f6e9da]/70">ביום שצריך: לפתוח שיחה עם Claude, לצרף את הקובץ, ולכתוב:</p>
-          <div className="mt-1.5 flex items-start gap-2">
-            <p className="flex-1 font-hand text-[15.5px] leading-snug">״{PROMPT}״</p>
-            <button type="button" onClick={copyPrompt} aria-label="להעתיק את המשפט" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10">
-              <Copy size={16} aria-hidden />
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   );

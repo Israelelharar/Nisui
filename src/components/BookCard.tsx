@@ -9,13 +9,13 @@ import { P } from '../lib/he';
 
 /** Home: today's chapter of "הספר שלנו", like a bookmark sticking out of the page. */
 export function BookCard() {
-  const { clock, viewer } = useApp();
+  const { clock, viewer, launchDay } = useApp();
   const { isOpened } = useOpened();
   const isAdmin = viewer.role === 'admin';
   if (!has('book')) return null;
   if (!book.length) return null;
-  const again = bookFinished(clock.dayIndex);
-  const c = again ? pickDaily(book, clock.dayIndex, 'book-again') : book[chaptersOpen(clock.dayIndex, false) - 1];
+  const again = bookFinished(clock.dayIndex, launchDay);
+  const c = again ? pickDaily(book, clock.dayIndex, 'book-again') : book[chaptersOpen(clock.dayIndex, false, launchDay) - 1];
   const n = book.indexOf(c) + 1;
   const read = isOpened(`book:${c.id}`);
   return (

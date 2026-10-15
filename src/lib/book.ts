@@ -2,18 +2,18 @@ import { book, type BookChapter } from '../content/book';
 import { getNote } from './noteById';
 import { client } from '../client';
 
-/** The first chapter opens this morning; one more every morning after. */
-export const BOOK_START = client.bookStart ?? client.launchDate ?? '2026-01-01';
-const startDay = Math.floor(Date.parse(`${BOOK_START}T00:00:00Z`) / 86_400_000);
+/**
+ * The first chapter opens on `bookStart` (or, without one, on the partner's first visit,
+ * `launchDay`); one more every morning after.
+ */
+const fixedStart = client.bookStart ? Math.floor(Date.parse(`${client.bookStart}T00:00:00Z`) / 86_400_000) : null;
+const startOf = (launchDay: number) => fixedStart ?? launchDay;
 
 /** How many chapters are open. The admin sees all of them. */
-export const chaptersOpen = (dayIndex: number, all: boolean) => (all ? book.length : Math.max(1, Math.min(book.length, dayIndex - startDay + 1)));
+export const chaptersOpen = (dayIndex: number, all: boolean, launchDay: number) => (all ? book.length : Math.max(1, Math.min(book.length, dayIndex - startOf(launchDay) + 1)));
 
-/** For the admin's "not open yet" marks: what the partner has today. */
 /** Every chapter is out: from now on the home card brings back an old one each day. */
-export const bookFinished = (dayIndex: number) => dayIndex - startDay + 1 > book.length;
-
-export const chaptersOpenForPartner = (dayIndex: number) => chaptersOpen(dayIndex, false);
+export const bookFinished = (dayIndex: number, launchDay: number) => dayIndex - startOf(launchDay) + 1 > book.length;
 
 /** Hebrew numerals, the way a real Hebrew book numbers its chapters: א׳, ט״ו, כ״ח. */
 export function heNum(n: number) {

@@ -2,7 +2,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!api/|login\\.html|assets/|icons/|manifest\\.webmanifest|sw\\.js).*)",
+      "source": "/((?!api/|login\\.html|robots\\.txt|assets/|icons/|manifest\\.webmanifest|sw\\.js).*)",
       "destination": "/index.html"
     }
   ],
@@ -10,6 +10,21 @@
     {
       "path": "/api/login",
       "schedule": "17 3 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive, noimageindex, noai, noimageai"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 /**
  * A tiny ZIP writer with no dependencies, used twice: at build time
- * (vite.config.ts packs the whole project into /backup/project-source.zip)
+ * (scripts/backup-plugin.ts packs the client's content into /backup/content.zip)
  * and in the admin's browser (the backup button adds today's data to that zip).
  */
 const CRC_TABLE = (() => {

@@ -41,10 +41,10 @@ function untilNext(hour: number, minute: number) {
 }
 
 export function BookPage() {
-  const { viewer, clock } = useApp();
+  const { viewer, clock, launchDay } = useApp();
   const isAdmin = viewer.role === 'admin';
-  const open = chaptersOpen(clock.dayIndex, isAdmin);
-  const hers = chaptersOpen(clock.dayIndex, false);
+  const open = chaptersOpen(clock.dayIndex, isAdmin, launchDay);
+  const hers = chaptersOpen(clock.dayIndex, false, launchDay);
   const { isOpened, markOpened } = useOpened();
   const [params, setParams] = useSearchParams();
   const asked = book.find((c) => c.id === params.get('ch'));

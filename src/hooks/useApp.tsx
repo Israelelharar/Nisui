@@ -16,6 +16,10 @@ export type Viewer = {
   settings?: Settings;
   notify?: Record<string, boolean>;
   store?: boolean;
+  /** A demo deployment (DEMO=1). */
+  demo?: boolean;
+  /** Someone the owner showed the demo to with a link: looks, never changes anything. */
+  guest?: boolean;
 };
 
 interface AppState {

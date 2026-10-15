@@ -1,12 +1,8 @@
 # איך מחזירים את האתר לחיים (ספר ההפעלה)
 
-> אם משהו קרה לאתר, לוורסל או לגיטהאב, הקובץ הזה הוא כל מה שצריך.
-> פותחים שיחה חדשה עם Claude (או כל בינה מלאכותית שיודעת לכתוב קוד), מצרפים את קובץ ה־zip שהורדתם מעמוד הניהול,
-> וכותבים:
->
-> **"זה גיבוי מלא של האתר שלנו. תקרא את READ-ME-FIRST.md ותעלה את האתר מחדש, צעד אחרי צעד, כולל הנתונים."**
->
-> מכאן היא אמורה להסתדר לבד. נשאר רק לבחור סיסמאות וללחוץ על כמה כפתורים בוורסל.
+> מסמך לבעל השירות (לא נשלח ללקוחות). אם משהו קרה לאתר של לקוח: לוקחים את הקוד מהריפו הפרטי שלך,
+> ואת התוכן והנתונים מקובץ הגיבוי שהלקוח הוריד מעמוד הניהול. אפשר לפתוח שיחה עם Claude על הריפו, לצרף את הקובץ,
+> ולכתוב: **"תחזיר את האתר של הלקוח הזה מהגיבוי, לפי docs/RECOVERY.md."**
 
 ---
 
@@ -14,9 +10,9 @@
 
 | נתיב בתוך ה־zip | מה זה |
 |---|---|
-| `READ-ME-FIRST.md` | הקובץ הזה |
-| `backup-manifest.json` | מתי נבנה הגיבוי, מאיזה commit, ענף ולקוח (`client`) |
-| `project/` | הקוד, והתיקייה של הלקוח הזה בלבד ב־`clients/<slug>/`: הטקסטים, התמונות והמכתבים |
+| `READ-ME-FIRST.md` | הסבר קצר ללקוח (`docs/BACKUP-README.md`) |
+| `backup-manifest.json` | מתי נבנה הגיבוי, מאיזה commit ולאיזה לקוח (`client`) |
+| `content/` | התיקייה של הלקוח בלבד (`clients/<slug>/`): הטקסטים, התמונות והמכתבים. **הקוד לא נמצא בגיבוי, בכוונה:** הוא שלך |
 | `data/site-data.json` | כל מה ששמור בשרת ביום הגיבוי: החיה, האלבום, הציורים, הפתקים שנפתחו, השוברים, הפרקים שנקראו, היומן, ההגדרות |
 
 **מה לא נמצא בגיבוי, בכוונה:** סיסמאות, `SESSION_SECRET` ומפתחות ההתראות. הם נשמרים רק בוורסל. בשחזור בוחרים חדשים.
@@ -29,8 +25,8 @@ Stack: React 19 + TypeScript + Tailwind 4 + motion + react-router, built with Vi
 
 The repo is a template for many couples: each couple is a folder in `clients/<slug>/`, picked at build time by the `CLIENT` env var. `backup-manifest.json` says which one this is.
 
-1. **Unpack** the zip and work inside `project/`. `CLIENT=<slug> npm install && CLIENT=<slug> npm run build` must pass (it type-checks too).
-2. **GitHub.** Create a new **private** repo and push `project/` to it.
+1. **Code + content.** The client's backup zip holds only their content (`content/` = `clients/<slug>/`) and data, never the code. Take the code from the owner's repo, copy the zip's `content/` into `clients/<slug>/`, and check that `CLIENT=<slug> npm install && CLIENT=<slug> npm run build` passes (it type-checks too).
+2. **GitHub.** Use the owner's private repo (one repo for all clients).
 3. **Vercel.** Add New → Project → import the repo. Framework **Vite** (auto-detected), build `npm run build`, output `dist`.
 4. **Upstash Redis.** Vercel project → Storage → Marketplace → **Upstash for Redis** (Free) → connect. This sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`.
 5. **Environment variables** (Settings → Environment Variables), then **Redeploy**:
@@ -48,7 +44,7 @@ The repo is a template for many couples: each couple is a folder in `clients/<sl
    | `NOTIFY_WHATSAPP` + `CALLMEBOT_APIKEY` | optional | WhatsApp notifications through CallMeBot |
    | `NOTIFY_EMAIL` + `RESEND_API_KEY` | optional | e-mail notifications through Resend |
 
-6. **Restore the data.** From `project/`:
+6. **Restore the data.** From the repo root:
    ```bash
    KV_REST_API_URL=... KV_REST_API_TOKEN=... [KV_PREFIX=...] node scripts/restore-data.mjs ../data/site-data.json
    ```

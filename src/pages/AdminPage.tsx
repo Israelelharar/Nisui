@@ -15,6 +15,7 @@ import { SkinPicker } from '../components/SkinPicker';
 import { StartStatus } from '../components/StartStatus';
 import { StorageCard } from '../components/StorageCard';
 import { ProjectBackup } from '../components/ProjectBackup';
+import { DemoLinks } from '../components/DemoLinks';
 import { A, P, a, p } from '../lib/he';
 import { has } from '../client';
 import { adminNotes } from '../content/notes';
@@ -63,6 +64,8 @@ export function AdminPage() {
           </button>
         </form>
       </header>
+
+      <DemoLinks />
 
       <StartStatus />
 

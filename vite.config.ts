@@ -20,4 +20,6 @@ export default defineConfig({
   base: process.env.VITE_PREVIEW ? './' : '/',
   resolve: { alias: { '@client': clientDir } },
   plugins: [react(), tailwindcss(), clientShell(clientDir), devApi(), projectBackup(CLIENT)],
+  // Never ship source maps: the readable source stays in the repo.
+  build: { sourcemap: false },
 });

@@ -42,12 +42,14 @@
   <form method="post" action="/api/login">
     <label for="password">הסיסמה שלך</label>
     <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
+    <p class="wrong" id="expired" role="alert">הלינק הזה כבר לא בתוקף. אפשר לבקש לינק חדש 🙂</p>
     <p class="wrong" id="wrong" role="alert">זאת לא הסיסמה. {{TRY_AGAIN}} 🙂</p>
     <button type="submit">לפתוח</button>
   </form>
 </main>
 <script>
   if (new URLSearchParams(location.search).has('wrong')) document.getElementById('wrong').classList.add('show');
+  if (new URLSearchParams(location.search).has('expired')) document.getElementById('expired').classList.add('show');
 </script>
 </body>
 </html>

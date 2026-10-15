@@ -1,3 +1,8 @@
+import { currentSlug, currentSite } from './site.js';
+
+/** The site's own time zone (profile.json `timeZone`), Asia/Jerusalem by default. */
+export const siteTimeZone = () => (currentSlug() ? currentSite().timeZone : 'Asia/Jerusalem');
+
 /**
  * The admin's edits for one day. Keyed by the content day (a day starts at
  * 05:00 local time), so at 05:00 the next morning everything is back to the
@@ -23,7 +28,7 @@ export const isDate = (s: unknown): s is string => typeof s === 'string' && /^\d
 
 /** Today's content date locally (a day starts at 05:00). */
 export function contentDateNow(now = Date.now()) {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: process.env.SITE_TZ ?? 'Asia/Jerusalem', year: 'numeric', month: '2-digit', day: '2-digit' }).format(
+  return new Intl.DateTimeFormat('en-CA', { timeZone: siteTimeZone(), year: 'numeric', month: '2-digit', day: '2-digit' }).format(
     new Date(now - 5 * 60 * 60 * 1000),
   );
 }

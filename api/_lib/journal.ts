@@ -1,4 +1,4 @@
-import { roleFromRequest } from './session.js';
+import { roleFromRequest } from './site.js';
 import { hasStore, getJSON, setJSON } from './store.js';
 import { notifyAdmin } from './notify.js';
 

@@ -1,3 +1,4 @@
+import { currentSlug } from './site.js';
 /**
  * Tiny key-value store on Upstash Redis (REST API, no SDK). Vercel's Upstash
  * integration sets KV_REST_API_URL / KV_REST_API_TOKEN automatically.
@@ -8,10 +9,13 @@ const token = () => process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_R
 export const hasStore = () => !!(url() && token());
 
 /**
- * Several client sites can share one Upstash database: each sets its own
- * KV_PREFIX (e.g. "noa:"), and every key it touches lives under that prefix.
+ * Every site in the deployment shares one Upstash database: each request's keys live under its
+ * own site, "<slug>:" (api/_lib/site.ts). Outside a site (the daily keep-alive) keys are bare.
  */
-const PREFIX = () => process.env.KV_PREFIX ?? '';
+const PREFIX = () => {
+  const slug = currentSlug();
+  return slug ? `${slug}:` : '';
+};
 export const k = (key: string) => PREFIX() + key;
 const unk = (key: string) => (PREFIX() && key.startsWith(PREFIX()) ? key.slice(PREFIX().length) : key);
 

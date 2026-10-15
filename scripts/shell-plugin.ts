@@ -10,6 +10,7 @@ import type { Plugin } from 'vite';
  * hard-coded and no client content ever reaches the (public) login page.
  */
 interface Profile {
+  slug: string;
   title: string;
   shortTitle?: string;
   admin: { name: string; gender: 'm' | 'f' };
@@ -22,6 +23,8 @@ export function clientShell(clientDir: string): Plugin {
   const profile = JSON.parse(readFileSync(join(clientDir, 'profile.json'), 'utf8')) as Profile;
   const f = profile.partner.gender === 'f';
   const tokens: Record<string, string> = {
+    BASE: process.env.VITE_PREVIEW ? './' : `/${profile.slug}/`,
+    SITE: profile.slug,
     TITLE: profile.title,
     SHORT: profile.shortTitle ?? 'העולם שלנו',
     TO: `ל${profile.partner.name}`,
@@ -36,7 +39,7 @@ export function clientShell(clientDir: string): Plugin {
     transformIndexHtml: (html) => fill(html),
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        const name = req.url?.split('?')[0].slice(1) ?? '';
+        const name = (req.url?.split('?')[0] ?? '').replace(tokens.BASE, '').replace(/^\//, '');
         if (!PAGES.includes(name)) return next();
         res.setHeader('Content-Type', name.endsWith('.html') ? 'text/html; charset=utf-8' : 'application/manifest+json');
         res.end(page(name));

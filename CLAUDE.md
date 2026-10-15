@@ -1,7 +1,10 @@
 # Couple-site template
 
 A generic, configurable version of a private couple site, sold to clients. One codebase, one folder per
-couple in `clients/<slug>/`, one Vercel project per couple (env `CLIENT=<slug>`).
+couple in `clients/<slug>/`, and **one Vercel project for all of them**: each couple lives at `/<slug>/` (built by
+`scripts/build-all.mjs`; the server knows the sites from the generated `api/_lib/sites.gen.ts`). `/demo/` is the public
+look-only demo. Logging in is by first name (profile.json). Every /api call carries `x-site` (`src/lib/site.ts`), and
+every API handler is wrapped in `withSite` (`api/_lib/site.ts`).
 
 Built with:
 - Hebrew, RTL.

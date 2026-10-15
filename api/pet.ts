@@ -1,4 +1,5 @@
-import { roleFromRequest } from './_lib/session.js';
+import { roleFromRequest, withSite } from './_lib/site.js';
+import { siteTimeZone } from './_lib/day.js';
 import { hasStore, getJSON, setJSON, del } from './_lib/store.js';
 
 /**
@@ -13,7 +14,7 @@ const PET = 'pet:partner';
 /** One snapshot per day (local time), the last 45 days. The progress can always be brought back. */
 const BAKS = 'pet:partner:baks';
 const bakKey = (date: string) => `pet:partner:bak:${date}`;
-const today = () => new Date().toLocaleDateString('en-CA', { timeZone: process.env.SITE_TZ ?? 'Asia/Jerusalem' });
+const today = () => new Date().toLocaleDateString('en-CA', { timeZone: siteTimeZone() });
 
 async function backup(pet: unknown) {
   const date = today();
@@ -46,7 +47,7 @@ interface Gift {
   at: number;
 }
 
-export async function GET(request: Request) {
+async function get(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   const mine = role === 'partner';
@@ -81,7 +82,7 @@ export async function GET(request: Request) {
 }
 
 /** PUT { pet } (partner only). An older copy than the saved one is refused with the saved one. */
-export async function PUT(request: Request) {
+async function put(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   if (role !== 'partner' || !hasStore()) return new Response(null, { status: 204 });
@@ -110,7 +111,7 @@ export async function PUT(request: Request) {
  * POST { gift: { coins, note?, food? } } (admin only), or
  * POST { restore: 'YYYY-MM-DD' } (admin only): brings back the pet as it was that day.
  */
-export async function POST(request: Request) {
+async function post(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   if (!hasStore()) return json({ error: 'no store' }, 503);
@@ -154,7 +155,7 @@ export async function POST(request: Request) {
 }
 
 /** DELETE ?photo=<id> (partner only): removes a photo from the album. */
-export async function DELETE(request: Request) {
+async function remove(request: Request) {
   if ((await roleFromRequest(request)) !== 'partner') return json({ error: 'forbidden' }, 403);
   if (!hasStore()) return json({ error: 'no store' }, 503);
   const id = new URL(request.url).searchParams.get('photo') ?? '';
@@ -167,3 +168,8 @@ export async function DELETE(request: Request) {
   await del(photoKey(id));
   return new Response(null, { status: 204 });
 }
+
+export const GET = withSite(get);
+export const PUT = withSite(put);
+export const POST = withSite(post);
+export const DELETE = withSite(remove);

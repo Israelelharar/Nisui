@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig.server.json && vite build",
+    "build": "node scripts/build-all.mjs",
     "preview": "vite preview",
-    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.server.json",
+    "typecheck": "node scripts/gen-sites.mjs && tsc -p tsconfig.json && tsc -p tsconfig.server.json",
     "check:leaks": "node scripts/check-leaks.mjs",
     "check:clients": "for c in $(ls clients | grep -v '^_template$'); do echo \"== $c\"; CLIENT=$c npx vite build --logLevel error --outDir dist-check/$c || exit 1; done && rm -rf dist-check"
   },

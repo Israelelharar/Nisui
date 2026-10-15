@@ -1,34 +1,16 @@
+import { sign } from './session.js';
+import { currentSite, currentSlug } from './site.js';
+
 /**
- * Sends one short message to the admin on every channel that is configured:
- * WhatsApp (CallMeBot), e-mail (Resend) and/or push (ntfy).
+ * Notifications to the admin go through ntfy (free phone app). Every site has its own secret
+ * topic, made from SESSION_SECRET, so there is nothing to set up: the admin page shows it, he
+ * subscribes once in the app, done. The demo never notifies.
  */
+export const ntfyTopic = async (slug: string) => `ourworld-${slug}-${(await sign(`ntfy:${slug}`)).replace(/[^A-Za-z0-9]/g, '').slice(0, 16)}`;
+
 export async function notifyAdmin(text: string) {
-  const env = process.env;
-  const jobs: Promise<unknown>[] = [];
-
-  if (env.CALLMEBOT_APIKEY && env.NOTIFY_WHATSAPP) {
-    const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(env.NOTIFY_WHATSAPP)}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(env.CALLMEBOT_APIKEY)}`;
-    jobs.push(fetch(url));
-  }
-  if (env.RESEND_API_KEY && env.NOTIFY_EMAIL) {
-    jobs.push(
-      fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: `${process.env.NOTIFY_FROM_NAME ?? 'העולם שלנו'} <onboarding@resend.dev>`, to: env.NOTIFY_EMAIL, subject: text, text }),
-      }),
-    );
-  }
-  if (env.NTFY_TOPIC) {
-    jobs.push(fetch(`https://ntfy.sh/${encodeURIComponent(env.NTFY_TOPIC)}`, { method: 'POST', body: text }));
-  }
-
-  const results = await Promise.allSettled(jobs);
-  return { channels: jobs.length, failed: results.filter((r) => r.status === 'rejected').length };
+  const slug = currentSlug();
+  if (!slug || currentSite().demo) return { channels: 0, failed: 0 };
+  const r = await fetch(`https://ntfy.sh/${encodeURIComponent(await ntfyTopic(slug))}`, { method: 'POST', body: text, headers: { Title: currentSite().title } }).catch(() => null);
+  return { channels: 1, failed: r?.ok ? 0 : 1 };
 }
-
-export const notifyChannels = () => ({
-  whatsapp: !!(process.env.CALLMEBOT_APIKEY && process.env.NOTIFY_WHATSAPP),
-  email: !!(process.env.RESEND_API_KEY && process.env.NOTIFY_EMAIL),
-  push: !!process.env.NTFY_TOPIC,
-});

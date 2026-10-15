@@ -12,7 +12,7 @@ import { buildZip, type ZipInput } from '../src/lib/zip';
  * Only the admin can fetch it (middleware.ts).
  *
  * The site's code is never in it: the code is the owner's, and a buyer's backup is their
- * story, not the product. Demo deployments (DEMO=1) build no backup at all.
+ * story, not the product. The demo site builds no backup at all.
  */
 function walk(dir: string, root: string, out: string[]) {
   for (const name of readdirSync(dir)) {
@@ -28,8 +28,9 @@ export function projectBackup(client: string): Plugin {
     name: 'project-backup',
     apply: 'build',
     generateBundle() {
-      if (process.env.VITE_PREVIEW || process.env.DEMO === '1') return;
       const root = process.cwd();
+      const demo = JSON.parse(readFileSync(join(root, 'clients', client, 'profile.json'), 'utf8')).demo;
+      if (process.env.VITE_PREVIEW || demo) return;
       const paths: string[] = [];
       walk(join(root, 'clients', client), root, paths);
       paths.sort();

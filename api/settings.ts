@@ -1,4 +1,4 @@
-import { roleFromRequest } from './_lib/session.js';
+import { roleFromRequest, withSite } from './_lib/site.js';
 import { hasStore, setJSON, allKeys, pipeline } from './_lib/store.js';
 import { getSettings, sanitizeSettings, SETTINGS_KEY } from './_lib/settings.js';
 
@@ -21,7 +21,7 @@ const groupOf = (key: string) =>
  * GET ?usage=1     admin: how much space everything takes, key by key
  * GET ?raw=a,b,c   admin: the stored values of those keys exactly as they are (for the full backup)
  */
-export async function GET(request: Request) {
+async function get(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   const url = new URL(request.url);
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
 }
 
 /** PUT { settings } (admin only). Replaces all settings. */
-export async function PUT(request: Request) {
+async function put(request: Request) {
   if ((await roleFromRequest(request)) !== 'admin') return json({ error: 'forbidden' }, 403);
   if (!hasStore()) return json({ error: 'no store' }, 503);
   const body = (await request.json().catch(() => null)) as { settings?: unknown } | null;
@@ -67,3 +67,6 @@ export async function PUT(request: Request) {
   await setJSON(SETTINGS_KEY, settings);
   return json({ settings });
 }
+
+export const GET = withSite(get);
+export const PUT = withSite(put);

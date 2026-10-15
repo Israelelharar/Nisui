@@ -1,11 +1,11 @@
-import { roleFromRequest } from './_lib/session.js';
+import { roleFromRequest, withSite } from './_lib/site.js';
 import { hasStore, getJSON, setJSON, del, addToSet, removeFromSet } from './_lib/store.js';
 import { DAY_KEY, DAYS_SET, contentDateNow, isDate, sanitize, type DayOverride } from './_lib/day.js';
 
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 
 /** GET ?date=YYYY-MM-DD. The partner only ever gets today or earlier, never future surprises. */
-export async function GET(request: Request) {
+async function get(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   if (!hasStore()) return json({ override: null });
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 }
 
 /** PUT { date, override } (admin only). An empty override clears the day. */
-export async function PUT(request: Request) {
+async function put(request: Request) {
   if ((await roleFromRequest(request)) !== 'admin') return json({ error: 'forbidden' }, 403);
   if (!hasStore()) return json({ error: 'no store' }, 503);
   const body = (await request.json().catch(() => null)) as { date?: unknown; override?: unknown } | null;
@@ -33,3 +33,6 @@ export async function PUT(request: Request) {
   await addToSet(DAYS_SET, body!.date);
   return json({ date: body!.date, override });
 }
+
+export const GET = withSite(get);
+export const PUT = withSite(put);

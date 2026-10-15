@@ -10,6 +10,7 @@ import { HidingPig } from './HidingPig';
 import { skinFor } from '../lib/skins';
 import { NightSky } from './NightSky';
 import { has } from '../client';
+import { DemoSwitch } from './DemoSwitch';
 
 export function Layout() {
   const { pathname } = useLocation();
@@ -61,10 +62,8 @@ export function Layout() {
         <Outlet />
         {!night && !cocoa && has('sock') && <Sock />}
       </motion.main>
-      {viewer.guest && (
-        <div className="pointer-events-none fixed top-3 right-3 z-30 rotate-[2deg] rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-white shadow-soft">אתר לדוגמה</div>
-      )}
-      {viewer.role === 'admin' && pathname !== '/admin' && (
+      {viewer.demo && <DemoSwitch admin={viewer.role === 'admin'} />}
+      {viewer.role === 'admin' && !viewer.demo && pathname !== '/admin' && (
         <Link to="/admin" className="fixed top-3 left-3 z-30 rounded-full bg-ink/85 px-3 py-1.5 text-xs font-bold text-white no-underline backdrop-blur">
           👀 מצב צפייה · ניהול
         </Link>

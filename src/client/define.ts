@@ -7,6 +7,10 @@ export interface Profile {
   shortTitle?: string;
   admin: Person;
   partner: Person;
+  /** The public demo site (no login, look-only). */
+  demo?: boolean;
+  /** Extra accepted ways to type each name at the login, e.g. { "admin": ["yoav"] }. */
+  login?: { admin?: string[]; partner?: string[] };
 }
 
 /**

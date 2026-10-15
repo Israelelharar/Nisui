@@ -34,7 +34,7 @@ export function ProjectBackup() {
       // 1. the project zip, with download progress
       setStep(0);
       setPct(0);
-      const res = await fetch('/backup/content.zip', { cache: 'no-store' });
+      const res = await fetch(`${import.meta.env.BASE_URL}backup/content.zip`, { cache: 'no-store' });
       if (!res.ok || !res.body) throw new Error(res.status === 404 ? 'nozip' : String(res.status));
       const total = Number(res.headers.get('content-length')) || 0;
       const reader = res.body.getReader();

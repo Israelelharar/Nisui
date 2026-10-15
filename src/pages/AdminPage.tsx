@@ -15,16 +15,11 @@ import { SkinPicker } from '../components/SkinPicker';
 import { StartStatus } from '../components/StartStatus';
 import { StorageCard } from '../components/StorageCard';
 import { ProjectBackup } from '../components/ProjectBackup';
-import { DemoLinks } from '../components/DemoLinks';
 import { A, P, a, p } from '../lib/he';
 import { has } from '../client';
+import { SITE } from '../lib/site';
+import { NotifySetup } from '../components/NotifySetup';
 import { adminNotes } from '../content/notes';
-
-const CHANNELS = [
-  { id: 'whatsapp', label: 'וואטסאפ' },
-  { id: 'email', label: 'מייל' },
-  { id: 'push', label: 'התראת טלפון (ntfy)' },
-];
 
 /**
  * The admin's corner: what the partner gets today, what opens next,
@@ -59,13 +54,12 @@ export function AdminPage() {
           <p className="text-[15px] text-muted">רק {a('אתה רואה', 'את רואה')} את העמוד הזה. הכניסות שלך לא שולחות התראות.</p>
         </div>
         <form method="post" action="/api/logout">
+          <input type="hidden" name="site" value={SITE} />
           <button type="submit" aria-label="יציאה" className="flex size-11 items-center justify-center rounded-full text-muted hover:bg-line/60">
             <LogOut size={20} />
           </button>
         </form>
       </header>
-
-      <DemoLinks />
 
       <StartStatus />
 
@@ -75,7 +69,7 @@ export function AdminPage() {
 
       <SkinPicker />
 
-      <StorageCard />
+      {!viewer.demo && <StorageCard />}
 
       <ProjectBackup />
 
@@ -83,17 +77,7 @@ export function AdminPage() {
         <SectionTitle>
           <span className="flex items-center gap-2"><Bell size={18} className="text-accent" /> התראות כש{P} {p('נכנס', 'נכנסת')}</span>
         </SectionTitle>
-        <ul className="flex flex-col gap-2">
-          {CHANNELS.map((ch) => {
-            const on = viewer.notify?.[ch.id];
-            return (
-              <li key={ch.id} className="flex items-center justify-between rounded-xl bg-paper px-4 py-3 shadow-soft">
-                <span>{ch.label}</span>
-                <span className={`text-sm font-bold ${on ? 'text-accent' : 'text-muted'}`}>{on ? 'פעיל' : 'לא מוגדר'}</span>
-              </li>
-            );
-          })}
-        </ul>
+        <NotifySetup topic={viewer.ntfy} />
         {viewer.role === null && <p className="mt-2 text-sm text-muted">(בתצוגה המקדימה אין שרת, אז אין התראות.)</p>}
       </section>
 

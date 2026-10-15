@@ -1,4 +1,4 @@
-import { roleFromRequest } from './_lib/session.js';
+import { roleFromRequest, withSite } from './_lib/site.js';
 import { notifyAdmin } from './_lib/notify.js';
 import { journalGET, journalPOST } from './_lib/journal.js';
 
@@ -26,12 +26,12 @@ const TYPES = new Set([
 ]);
 
 /** GET /api/event?journal: the partner's meeting journal (api/_lib/journal.ts). */
-export async function GET(request: Request) {
+async function get(request: Request) {
   if (new URL(request.url).searchParams.has('journal')) return journalGET(request);
   return new Response(null, { status: 404 });
 }
 
-export async function POST(request: Request) {
+async function post(request: Request) {
   if (new URL(request.url).searchParams.has('journal')) return journalPOST(request);
   const role = await roleFromRequest(request);
   if (role !== 'partner') return new Response(null, { status: 204 });
@@ -40,3 +40,6 @@ export async function POST(request: Request) {
   await notifyAdmin(text.trim().slice(0, 300));
   return new Response(null, { status: 204 });
 }
+
+export const GET = withSite(get);
+export const POST = withSite(post);

@@ -1,4 +1,4 @@
-import { roleFromRequest } from './_lib/session.js';
+import { roleFromRequest, withSite } from './_lib/site.js';
 import { hasStore, addToSet, setMembers, getJSON, setJSON } from './_lib/store.js';
 
 /**
@@ -31,7 +31,7 @@ function cleanNote(v: unknown): CustomNote | undefined {
 }
 
 /** `mine`: false for the admin, whose view mirrors exactly what the partner opened. */
-export async function GET(request: Request) {
+async function get(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   const mine = role === 'partner';
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
 }
 
 /** POST { ids: string[], notes?: CustomNote[] }. Additive only: nothing opened is ever removed. */
-export async function POST(request: Request) {
+async function post(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   if (role !== 'partner' || !hasStore()) return new Response(null, { status: 204 });
@@ -56,3 +56,6 @@ export async function POST(request: Request) {
   }
   return new Response(null, { status: 204 });
 }
+
+export const GET = withSite(get);
+export const POST = withSite(post);

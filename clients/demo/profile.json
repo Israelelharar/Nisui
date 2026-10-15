@@ -2,6 +2,14 @@
   "slug": "demo",
   "title": "העולם של נועה ויואב",
   "shortTitle": "העולם שלנו",
-  "admin": { "name": "יואב", "gender": "m", "phone": "+972500000000" },
-  "partner": { "name": "נועה", "gender": "f" }
+  "admin": {
+    "name": "יואב",
+    "gender": "m",
+    "phone": "+972500000000"
+  },
+  "partner": {
+    "name": "נועה",
+    "gender": "f"
+  },
+  "demo": true
 }

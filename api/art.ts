@@ -1,4 +1,4 @@
-import { roleFromRequest } from './_lib/session.js';
+import { roleFromRequest, withSite } from './_lib/site.js';
 import { hasStore, getJSON, setJSON, del } from './_lib/store.js';
 
 /**
@@ -30,7 +30,7 @@ export interface ArtMeta {
 
 const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
-export async function GET(request: Request) {
+async function get(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   if (!hasStore()) return json({ error: 'no store' }, 503);
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
   return json({ art: list });
 }
 
-export async function POST(request: Request) {
+async function post(request: Request) {
   const role = await roleFromRequest(request);
   if (!role) return json({ error: 'unauthorized' }, 401);
   if (!hasStore()) return json({ error: 'no store' }, 503);
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
   return json({ art: meta });
 }
 
-export async function DELETE(request: Request) {
+async function remove(request: Request) {
   if ((await roleFromRequest(request)) !== 'partner') return json({ error: 'forbidden' }, 403);
   if (!hasStore()) return json({ error: 'no store' }, 503);
   const id = new URL(request.url).searchParams.get('id') ?? '';
@@ -123,3 +123,7 @@ export async function DELETE(request: Request) {
   await del(imgKey(id));
   return new Response(null, { status: 204 });
 }
+
+export const GET = withSite(get);
+export const POST = withSite(post);
+export const DELETE = withSite(remove);

@@ -13,7 +13,7 @@ const emit = () => listeners.forEach((l) => l());
 
 if (typeof window !== 'undefined') {
   if ('serviceWorker' in navigator && !import.meta.env.DEV && !import.meta.env.VITE_PREVIEW) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+    window.addEventListener('load', () => navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`, { scope: import.meta.env.BASE_URL }).catch(() => {}));
   }
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();

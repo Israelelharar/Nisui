@@ -8,7 +8,7 @@ React 19 + TypeScript + Tailwind 4 + Motion, נבנה עם Vite ורץ על Verc
 ```bash
 npm install
 npm run dev                 # הזוג לדוגמה (clients/demo)
-CLIENT=<slug> npm run dev   # לקוח אחר
+CLIENT=<slug> npm run dev   # לקוח אחר (http://localhost:5173/<slug>/)
 npm run build               # בודק טיפוסים ובונה
 npm run check:leaks         # שום פרט מהאתר המקורי לא דלף לתבנית
 npm run check:clients       # בונה את כל הלקוחות
@@ -19,5 +19,6 @@ npm run check:clients       # בונה את כל הלקוחות
 - **עברית לפי מגדר:** `src/lib/he.ts`. כל טקסט שפונה לאחד מהם עובר דרך `p()` (מי שהאתר בשבילו/ה) או `a()` (המזמין/ה).
 - **החיה:** `src/pet/`. ציור אחד (`PigSvg.tsx`) שמשתנה לפי `src/pet/species/`.
 - **גיבוי ושחזור:** [`docs/RECOVERY.md`](docs/RECOVERY.md).
-- **אתר דמו עם לינקים שפגים:** [`docs/DEMO.md`](docs/DEMO.md).
+- **הדמו:** `/demo/` (או הכתובת הראשית). פתוח לכולם בלי סיסמה, אפשר רק להסתכל.
+- **כתובות:** פרויקט Vercel אחד לכל הזוגות, וכל זוג נמצא ב־`/<slug>/`. הכניסה היא בשם הפרטי.
 - לראות את האתר בשעה אחרת: `?at=2026-09-25T06:00`.

@@ -2,7 +2,7 @@
 /**
  * Puts a backup of the site's data back into a (new) Upstash Redis store.
  *
- *   KV_REST_API_URL=... KV_REST_API_TOKEN=... [KV_PREFIX=...] node scripts/restore-data.mjs data/site-data.json
+ *   KV_REST_API_URL=... KV_REST_API_TOKEN=... KV_PREFIX=<slug>: node scripts/restore-data.mjs data/site-data.json
  *
  * The file is the one the backup button makes (kind "idw-backup"): every key
  * exactly as it was stored. Strings are SET, sets are SADDed. Existing keys
@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 const [file] = process.argv.slice(2);
 const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
 const token = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
-/** Same KV_PREFIX as the site's Vercel project, when several sites share one database. */
+/** The site's keys live under "<slug>:" (api/_lib/site.ts), e.g. KV_PREFIX=noa-yoav: */
 const prefix = process.env.KV_PREFIX ?? '';
 if (!file || !url || !token) {
   console.error('usage: KV_REST_API_URL=... KV_REST_API_TOKEN=... node scripts/restore-data.mjs <site-data.json>');

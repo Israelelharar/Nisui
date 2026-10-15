@@ -5,7 +5,7 @@ import type { Plugin } from 'vite';
  * `npm run dev` with a working server: /api/* runs the real functions from
  * api/ (through Vite's SSR loader), and without Upstash credentials they use
  * a small in-memory store instead, so logging in, the pet, the journal and
- * the admin page all work locally. Dev passwords: admin / partner.
+ * the admin page all work locally. Log in with the couple's names, or admin / partner.
  * Never part of a build.
  */
 export function devApi(): Plugin {
@@ -15,8 +15,7 @@ export function devApi(): Plugin {
     configureServer(server) {
       const env = process.env;
       env.SESSION_SECRET ??= 'dev-only-secret-dev-only-secret';
-      env.ADMIN_PASSWORD ??= 'admin';
-      env.PARTNER_PASSWORD ??= 'partner';
+      env.DEV_LOGINS = '1';
       if (!env.KV_REST_API_URL && !env.UPSTASH_REDIS_REST_URL) {
         env.KV_REST_API_URL = 'https://memory.kv';
         env.KV_REST_API_TOKEN = 'dev';

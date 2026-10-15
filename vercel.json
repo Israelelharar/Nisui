@@ -2,8 +2,8 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!api/|login\\.html|robots\\.txt|assets/|icons/|manifest\\.webmanifest|sw\\.js).*)",
-      "destination": "/index.html"
+      "source": "/:site([a-z0-9][a-z0-9-]*)/:path((?!assets/|icons/|backup/|login\\.html|manifest\\.webmanifest|sw\\.js|robots\\.txt|seal\\.svg).*)",
+      "destination": "/:site/index.html"
     }
   ],
   "crons": [
@@ -25,6 +25,18 @@
           "value": "DENY"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/demo/",
+      "permanent": false
+    },
+    {
+      "source": "/:site([a-z0-9][a-z0-9-]*)",
+      "destination": "/:site/",
+      "permanent": false
     }
   ]
 }

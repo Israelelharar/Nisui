@@ -39,7 +39,7 @@ function Stuck() {
       <div aria-hidden className="text-[56px]">💌</div>
       <h1 className="font-serif text-[26px]">משהו קטן נתקע</h1>
       <p className="text-muted">כנראה יצאה גרסה חדשה של האתר בדיוק עכשיו.</p>
-      <button type="button" onClick={() => window.location.assign('/')} className="h-12 rounded-full bg-accent px-7 font-bold text-white">
+      <button type="button" onClick={() => window.location.assign(import.meta.env.BASE_URL)} className="h-12 rounded-full bg-accent px-7 font-bold text-white">
         לרענן ❤️
       </button>
     </div>
@@ -124,7 +124,7 @@ const router = createRouter([
       (m) => m.BookPrintPage,
     ),
   },
-].filter(on));
+].filter(on), { basename: import.meta.env.VITE_PREVIEW ? undefined : import.meta.env.BASE_URL.replace(/\/$/, '') });
 
 const ENTERED = 'idw:entered';
 
@@ -139,7 +139,7 @@ const seenThisVisit = () => {
 export function App() {
   // The envelope greets the partner once per visit (per browser session).
   // The admin page skips it: the envelope is addressed to the partner.
-  const [entered, setEntered] = useState(() => !has('welcome') || seenThisVisit() || window.location.pathname.startsWith('/admin'));
+  const [entered, setEntered] = useState(() => !has('welcome') || seenThisVisit() || window.location.pathname.startsWith(`${import.meta.env.BASE_URL}admin`));
   // Without the envelope, the visit still counts once per session.
   useEffect(() => {
     if (has('welcome') || seenThisVisit()) return;

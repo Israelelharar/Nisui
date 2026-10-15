@@ -14,11 +14,12 @@ export type Viewer = {
   role: 'admin' | 'partner' | null;
   launchDate?: string | null;
   settings?: Settings;
-  notify?: Record<string, boolean>;
+  /** The admin's own ntfy topic for notifications (admin only). */
+  ntfy?: string;
   store?: boolean;
-  /** A demo deployment (DEMO=1). */
+  /** The demo site: open to everyone, look-only. */
   demo?: boolean;
-  /** Someone the owner showed the demo to with a link: looks, never changes anything. */
+  /** Looking only (everyone on the demo). */
   guest?: boolean;
 };
 
